@@ -1,0 +1,25 @@
+on:
+  workflow_call:
+    inputs:
+      application:
+        required: true
+        type: string
+    secrets:
+      TOKEN:
+        required: true
+
+jobs:
+  polaris:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Polaris Scan
+      uses: synopsys-sig/synopsys-action@v1.4.0
+      with:
+        polaris_serverUrl: ${{ vars.POLARIS_SERVERURL }}
+        polaris_accessToken: ${{ secrets.TOKEN }}
+        polaris_application_name: ${{ inputs.application }}
+        polaris_project_name: ${{ github.event.repository.name }}
+        polaris_branch_name: ${{ github.ref_name }}
+        polaris_assessment_types: 'SAST,SCA'
+        bridge_polaris_prComment_enabled: ${{ github.event_name == 'pull_request' && 'true' || 'false' }}
+        github_token: ${{ secrets.GITHUB_TOKEN }}
